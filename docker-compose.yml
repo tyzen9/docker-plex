@@ -1,0 +1,28 @@
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - VERSION=docker
+      # This is needed the firstime you run the server to claim it.
+      # - PLEX_CLAIM=
+    volumes:
+      - config:/config
+      - /mnt/hdd2:/tv
+      - /mnt/hdd1:/movies
+      - /mnt/hdd1/plex_prerolls:/plex_prerolls
+      - /mnt/hdd3:/audio
+      - /mnt/pensieve/plex_baseball_videos:/videos_baseball
+      - /mnt/pensieve/plex_family_videos:/videos_family
+      - /mnt/pensieve/plex_photography:/photos
+    ports:
+      - 32400:32400
+    restart: unless-stopped
+
+volumes:
+  config:
+    name: plex-config
