@@ -2,12 +2,16 @@ services:
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
+    restart: unless-stopped
     network_mode: host
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
       - VERSION=docker
+      # Configure Nvidia Transcoding
+      - NVIDIA_VISIBLE_DEVICES=all  # Makes all GPUs visible to the container
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility  # Required capabilities for Plex transcoding    
       # This is needed the firstime you run the server to claim it.
       # - PLEX_CLAIM=
     volumes:
@@ -21,7 +25,15 @@ services:
       - /mnt/pensieve/plex_photography:/photos
     ports:
       - 32400:32400
-    restart: unless-stopped
+    # Enable Nvidia transcoding
+    # Make sure NVIDIA Container Toolkit is installed and validate functionality
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1  # Use 'all' instead of '1' if you have multiple GPUs
+              capabilities: [gpu]
 
 volumes:
   config:
