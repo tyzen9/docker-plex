@@ -8,7 +8,7 @@ This Plex container is constructed from [linuxserver.io](https://docs.linuxserve
 
 This container in particular has been configured to leverage Nvidia GPU transcoding, which makes a VERY noticeable improvement in streaming content to Internet connected consumers making the sharing of family videos, and live TV lightning fast and stable. 
 
-> [!INFO]
+> [!TIP]
 > If you do NOT have an Nvidia GPU then use `docker-compose_noGPU.yml`.
 
 > [!WARNING]
