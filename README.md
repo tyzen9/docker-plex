@@ -1,8 +1,8 @@
-<p align="center">
-<img src="doc/plex_logo.jpg" height="105" style="padding-left: 25px">  
-</p> 
+# <img src="docs/images/t9_logo.png" height="25"> Tyzen9 - docker-plex-tautulli
 
-# <img src="doc/t9_logo.png" height="25"> Tyzen9 - PLEX 
+<p align="center">
+<img src="docs/images/plex_logo.png" height="50">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <img src="docs/images/nvidia_logo.png" height="50">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="docs/images/tautulli_logo.png" height="50" style="padding-left: 25px">
+</p>  
 
 This Plex container is constructed from [linuxserver.io](https://docs.linuxserver.io/images/docker-plex/#application-setup) considered a [partner](https://forums.plex.tv/t/official-plex-media-server-docker-images-getting-started/172291) to providing this container for Plex.
 
