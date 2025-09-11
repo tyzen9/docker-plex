@@ -1,4 +1,4 @@
-# <img src="docs/images/t9_logo.png" height="25"> Tyzen9 - docker-plex-tautulli
+# <img src="docs/images/t9_logo.png" height="25"> Tyzen9 - docker-plex
 
 <p align="center">
 <img src="docs/images/plex_logo.png" height="50">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <img src="docs/images/nvidia_logo.png" height="50">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="docs/images/tautulli_logo.png" height="50" style="padding-left: 25px">
