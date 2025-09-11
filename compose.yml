@@ -1,0 +1,91 @@
+name: plex
+# *****************************************************************************
+# Tyzen9 - docker-plex-tautulli
+#
+# Author: Steve Theisen (https://github.com/tyzen9)
+#
+# This stack provides a complete self-hosted media solution:
+#   - Plex Media Server organizes and streams movies, TV, music, and photos.
+#   - Tautulli monitors Plex usage, offering detailed playback and user stats.
+#
+# Together, they enable both rich media streaming and powerful analytics.
+#
+# *****************************************************************************
+
+services:
+  # *****************************************************************************
+  # plex
+  #   Plex Media Server organizes and streams personal media collections,
+  #   including movies, TV shows, music, and photos, to multiple devices. 
+  #   It supports local and remote access, hardware transcoding, and integrates 
+  #   with metadata providers to enrich your library. Plex often requires 
+  #   `network_mode: host` for proper discovery and DLNA functionality, ensuring 
+  #   clients can find the server automatically across the local network.
+  #
+  # *****************************************************************************
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    restart: unless-stopped
+    ports:  
+    - 32400:32400
+    environment:
+      - TZ=${TZ_ID}
+      - PUID=${PUID:-1000}
+      - PGID=${GUID:-1000}
+      # - PLEX_CLAIM=claim-xxxxxxxxxxxxxxxxxxxx           # This is needed the first time you run the server to claim it.
+      - VERSION=docker
+      # Configure Nvidia Transcoding (NOTE: You can comment out if not using NVIDIA)
+      - NVIDIA_VISIBLE_DEVICES=all                        # Makes all GPUs visible to the container
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility  # Required capabilities for Plex transcoding    
+    volumes:
+      - plex-config:/config
+      - plex-config-media:/config/Library/Application Support/Plex Media Server/Media
+      - ${BIND_MOUNT_1}
+      - ${BIND_MOUNT_2}
+      - ${BIND_MOUNT_3}
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # NVIDIA Transcoding
+    # Requires NVIDIA Container Toolkit on the host.
+    # Ensures Plex can access the GPU for hardware-accelerated transcoding.
+    # (NOTE: You can comment this deploy section out if not using NVIDIA)
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1  # Use 'all' instead of '1' if you have multiple GPUs
+              capabilities: [gpu]
+
+  # *****************************************************************************
+  # tautulli
+  #   Tautulli is a monitoring and analytics tool for Plex Media Server.
+  #   It tracks activity such as playback, users, and bandwidth usage,
+  #   and provides detailed reports and notifications. Tautulli runs
+  #   separately from Plex but connects to it via the API. Typically,
+  #   it uses a published port (e.g., 8181) instead of host networking,
+  #   since it doesn’t require direct network discovery.
+  #
+  # *****************************************************************************
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    restart: unless-stopped
+    ports:
+      - 8181:8181
+    environment:
+      - TZ=${TZ_ID}
+      - PUID=${PUID:-1000}
+      - PGID=${GUID:-1000}
+    volumes:
+      - tautulli-config:/config
+
+# Backup Volumes: tautulli-config, plex-config
+# Note: The plex-config-media volume contains “Optimized for Mobile” and “Intro Detection”
+#       This volume is optional to backup, Plex can rebuild this for you. 
+volumes:
+  tautulli-config:
+  plex-config:
+  plex-config-media:
