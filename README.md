@@ -18,7 +18,7 @@ This Docker stack contains everything you need to host a [Plex](https://plex.tv/
 1. [Tautulli](https://docs.linuxserver.io/images/docker-tautulli/)
 
 ## Getting Started
-Deploy the stack into your Docker environment. This can be done by cloning this repository, by downloading the most recent [release](https://github.com/tyzen9/docker-insight/releases) .zip file, or just by simply copying the content of the `compose.yml` file and `sample.env` above. 
+Deploy the stack into your Docker environment. This can be done by cloning this repository, by downloading the most recent release, or just by simply copying the content of the `compose.yml` file and `sample.env` above. 
 
 1. Make a copy of `sample.env`, and name it `.env`
 1. Set the configuration options as desired in the `compose.yaml` and `.env` files.
