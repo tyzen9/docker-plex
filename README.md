@@ -1,23 +1,50 @@
 # <img src="docs/images/t9_logo.png" height="25"> Tyzen9 - docker-plex
+This Docker stack sets up a media server environment with [Plex](https://www.plex.tv/) configured to (optionally) use NVIDIA GPU hardware acceleration for efficient video transcoding and streaming, alongside [Tautulli](https://tautulli.com/) for real-time monitoring, usage statistics, and insights into Plex activity. It provides a performance-optimized media solution with advanced analytics and easy containerized management.
 
 <p align="center">
 <img src="docs/images/plex_logo.png" height="50">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <img src="docs/images/nvidia_logo.png" height="50">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="docs/images/tautulli_logo.png" height="50" style="padding-left: 25px">
 </p>  
 
+## Prerequisites
+In production it's generally best to use [Docker Engine](https://docs.docker.com/get-docker/) on a Linux host operating system, and a lightweight service delivery platform designed for managing containerized applications such as [Portainer](https://www.portainer.io/). This documentation assumes you have a working knowledge of [Docker](https://www.docker.com/).
+
+## Configuration
+This `docker-compose` implementation is configured using the `environment` section of the `compose.yaml` file.  
+
+# What's Inside?
+This Docker stack contains everything you need to host a [Plex](https://plex.tv/) server, with real-time usage monitoring and statistics. Here is what this project has to offer:
+
+1. [Plex](https://docs.linuxserver.io/images/docker-plex/)
+1. [Tautulli](https://docs.linuxserver.io/images/docker-tautulli/)
+
+## Getting Started
+Deploy the stack into your Docker environment. This can be done by cloning this repository, by downloading the most recent [release](https://github.com/tyzen9/docker-insight/releases) .zip file, or just by simply copying the content of the `compose.yml` file and `sample.env` above. 
+
+1. Make a copy of `sample.env`, and name it `.env`
+1. Set the configuration options as desired in the `compose.yaml` and `.env` files.
+1. Navigate to the project's root directory and run the following command:
+
+```
+docker compose up
+```
+
+If everything works as expected, you should be able to access Plex at http://hostname:32400, and Tautulli at http://hostname:8081.
+
+# Plex
 This Plex container is constructed from [linuxserver.io](https://docs.linuxserver.io/images/docker-plex/#application-setup) considered a [partner](https://forums.plex.tv/t/official-plex-media-server-docker-images-getting-started/172291) to providing this container for Plex.
 
 This container in particular has been configured to leverage Nvidia GPU transcoding, which makes a VERY noticeable improvement in streaming content to Internet connected consumers making the sharing of family videos, and live TV lightning fast and stable. 
 
 > [!TIP]
-> If you do NOT have an Nvidia GPU then use `docker-compose_noGPU.yml`.
+> If you do NOT have an Nvidia GPU then simply use `compose_noNvidia.yml`.
+
+## Nvidia GPU Transcoding
+These instructions assume Plex is running on Docker Engine withing a Linux (Ubuntu) host. 
 
 > [!WARNING]
 > These instructions are not tailored for a Windows server.
 
-# Nvidia GPU Transcoding
-These instructions assume Plex is running on Docker Engine withing a Linux (Ubuntu) host. 
-
-## Nvidia Driver Installation (Ubuntu Linux)
+### Nvidia Driver Installation & Configuration (Ubuntu Linux)
 1. Identify your graphics card
 
 ```sh
@@ -72,7 +99,7 @@ $ nvidia-smi
 +-----------------------------------------------------------------------------------------+
 ```
 
-## Set up the Nvidia Container Toolkit
+### Set up the Nvidia Container Toolkit
 Full documentation for this is available here: (https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker)
 
 1. Configure the production repository
@@ -129,8 +156,9 @@ sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
 +-----------------------------------------------------------------------------+
 ```
 
-## Configure Plex
+### Configure Plex for Nvidia GPU
 1. Restart the plex container
+
 ```sh
 docker-compose restart
 ```
@@ -140,7 +168,7 @@ docker-compose restart
 4. Scroll down to the `Hardware transcoding device` and select your NVIDIA card
 5. Enjoy!
 
-# Restore Previous Plex Instance
+## Plex Server Migration
 If you are migrating from a previous Plex installation to a new installation of Plex then you will need a backup of the previous Plex settings. [This is a GREAT article to reference](https://support.plex.tv/articles/201370363-move-an-install-to-another-system/) on Plex's support page
 
 I moved from Windows to a more stable Docker container on Ubuntu. I backed up a Windows installation of Plex's config located in `%LOCALAPPDATA%\Plex Media Server` to a USB drive. I then plugged that into the new Ubuntu box and mounted it to `/media/usb1/plex`
@@ -225,3 +253,23 @@ Look for "Server claimed successfully" or similar.
 
 5. After claiming, edit `docker-compose.yml` to remove PLEX_CLAIM (it’s not needed anymore).  Then restart the Plex container and the migration should be complete
 
+# Tautulli
+Setting up Tautulli is straightforwad.  Start by opening the web interface at http://hostname:8181.
+
+### Initial Setup Wizard
+
+1. Select your **language** and accept the **license**.
+1. Choose **Connect to Plex**:
+   - Log in with your Plex account.
+   - Select your Plex Media Server instance from the list.
+   - Tautulli should automatically detect your Plex token.  
+     - If not, you can enter it manually.
+
+### Configure Plex Settings
+
+1. Go to **Settings → Plex Media Server** in Tautulli.
+1. Verify the following:
+   - **Server IP/Hostname** (e.g., `192.168.1.10` or `plex.lan`)
+   - **Port** (default: `32400`)
+   - **Plex Token** (should be filled in automatically if you logged in)
+1. Click **Test Connection** — you should see a success message.
