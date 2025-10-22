@@ -37,7 +37,6 @@ services:
       - VERSION=docker
     volumes:
       - plex-config:/config
-      - plex-config-media:/config/Library/Application Support/Plex Media Server/Media
       - ${BIND_MOUNT_1}
       - ${BIND_MOUNT_2}
       - ${BIND_MOUNT_3}
