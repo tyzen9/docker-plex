@@ -45,7 +45,7 @@ services:
       - ${BIND_MOUNT_3}
     labels:
       # What's up docker labels (https://getwud.github.io/wud/#/)
-      - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+      - 'wud.tag.include=^\d+\.\d+\.\d+$'
       - 'wud.link.template=https://forums.plex.tv/'
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +86,7 @@ services:
       - tautulli-config:/config
     labels:
       # What's up docker labels (https://getwud.github.io/wud/#/)
-      - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+      - 'wud.tag.include=^\d+\.\d+\.\d+$'
       - 'wud.link.template=https://github.com/Tautulli/Tautulli/releases'
 
 # Backup Volumes: tautulli-config, plex-config
