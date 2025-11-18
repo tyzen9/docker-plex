@@ -86,7 +86,8 @@ services:
       - tautulli-config:/config
     labels:
       # What's up docker labels (https://getwud.github.io/wud/#/)
-      - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+      # Match a single digit first
+      - 'wud.tag.include=^[0-9]\.\d+\.\d+$$'
       - 'wud.link.template=https://github.com/Tautulli/Tautulli/releases'
 
 # Backup Volumes: tautulli-config, plex-config
