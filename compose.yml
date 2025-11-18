@@ -24,7 +24,7 @@ services:
   #
   # *****************************************************************************
   plex:
-    image: lscr.io/linuxserver/plex:latest
+    image: linuxserver/plex:${TAG_PLEX:-latest}
     container_name: plex
     restart: unless-stopped
     ports:  
@@ -43,6 +43,10 @@ services:
       - ${BIND_MOUNT_1}
       - ${BIND_MOUNT_2}
       - ${BIND_MOUNT_3}
+    labels:
+      # What's up docker labels (https://getwud.github.io/wud/#/)
+      - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+      - 'wud.link.template=https://forums.plex.tv/'
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # NVIDIA Transcoding
@@ -69,7 +73,7 @@ services:
   #
   # *****************************************************************************
   tautulli:
-    image: lscr.io/linuxserver/tautulli:latest
+    image: linuxserver/tautulli:${TAG_TAUTULLI:-latest}
     container_name: tautulli
     restart: unless-stopped
     ports:
@@ -80,6 +84,10 @@ services:
       - PGID=${GUID:-1000}
     volumes:
       - tautulli-config:/config
+    labels:
+      # What's up docker labels (https://getwud.github.io/wud/#/)
+      - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+      - 'wud.link.template=https://github.com/Tautulli/Tautulli/releases'
 
 # Backup Volumes: tautulli-config, plex-config
 # Note: The plex-config-media volume contains “Optimized for Mobile” and “Intro Detection”
