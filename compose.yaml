@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      - TZ=${TZ_ID}
+      - TZ=${TZ_ID:-America/New_York}
       - PUID=${PUID:-1000}
       - PGID=${GUID:-1000}
       # - PLEX_CLAIM=claim-xxxxxxxxxxxxxxxxxxxx           # This is needed the first time you run the server to claim it.
@@ -80,7 +80,7 @@ services:
     ports:
       - 8181:8181
     environment:
-      - TZ=${TZ_ID}
+      - TZ=${TZ_ID:-America/New_York}
       - PUID=${PUID:-1000}
       - PGID=${GUID:-1000}
     volumes:
