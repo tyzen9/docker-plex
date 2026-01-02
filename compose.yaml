@@ -1,4 +1,3 @@
-name: plex
 # *****************************************************************************
 # Tyzen9 - docker-plex-tautulli
 #
@@ -27,27 +26,23 @@ services:
     image: linuxserver/plex:${TAG_PLEX:-latest}
     container_name: plex
     restart: unless-stopped
-    ports:  
-    - 32400:32400
+    network_mode: host
     environment:
       - TZ=${TZ_ID}
       - PUID=${PUID:-1000}
       - PGID=${GUID:-1000}
       # - PLEX_CLAIM=claim-xxxxxxxxxxxxxxxxxxxx           # This is needed the first time you run the server to claim it.
       - VERSION=docker
-      # Configure Nvidia Transcoding (NOTE: You can comment out if not using NVIDIA)
-      - NVIDIA_VISIBLE_DEVICES=all                        # Makes all GPUs visible to the container
-      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility  # Required capabilities for Plex transcoding    
     volumes:
       - plex-config:/config
+      - /tmp/plex-transcode:/transcode                    # transcode temp directory (use RAM or SSD/NVMe)
       - ${BIND_MOUNT_1}
       - ${BIND_MOUNT_2}
       - ${BIND_MOUNT_3}
-    labels:
-      # What's up docker labels (https://getwud.github.io/wud/#/)
-      - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-      - 'wud.link.template=https://forums.plex.tv/'
-
+      - ${BIND_MOUNT_4}
+      - ${BIND_MOUNT_5}
+      - ${BIND_MOUNT_6}
+      - ${BIND_MOUNT_7}
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # NVIDIA Transcoding
     # Requires NVIDIA Container Toolkit on the host.
@@ -61,6 +56,12 @@ services:
             - driver: nvidia
               count: 1  # Use 'all' instead of '1' if you have multiple GPUs
               capabilities: [gpu]
+    labels:
+      # WUD - What's up docker labels (https://getwud.github.io/wud/#/) -----------
+      - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+      - 'wud.link.template=https://forums.plex.tv/'
+      # Offen Backups -------------------------------------------------------------
+      - "docker-volume-backup.stop-during-backup=${BACKUP_LABEL}"
 
   # *****************************************************************************
   # tautulli
@@ -85,10 +86,54 @@ services:
     volumes:
       - tautulli-config:/config
     labels:
-      # What's up docker labels (https://getwud.github.io/wud/#/)
+      # WUD - What's up docker labels (https://getwud.github.io/wud/#/) -----------
       # Match a single digit first
       - 'wud.tag.include=^[0-9]\.\d+\.\d+$$'
       - 'wud.link.template=https://github.com/Tautulli/Tautulli/releases'
+      # Offen Backups -------------------------------------------------------------
+      - "docker-volume-backup.stop-during-backup=${BACKUP_LABEL}"
+
+  # *********************************************************************************
+  # volume-backup
+  #   Automated daily backup of Docker named volumes using offen/docker-volume-backup.
+  #   This lightweight service runs in the background, creates a single compressed 
+  #   archive containing all specified volumes, and automatically prunes old backups 
+  #   based on the configured retention period. It ensures data consistency by 
+  #   temporarily stopping labeled containers during the backup process. Backups 
+  #   are stored locally on the host; a separate secure process (e.g., rsync/cron) 
+  #   can be used for off-site transfer.
+  #
+  # *********************************************************************************
+  volume-backup:
+    image: offen/docker-volume-backup:${TAG_OFFEN:-latest}
+    container_name: ${BACKUP_LABEL}-backup
+    restart: unless-stopped
+    depends_on:
+      - plex
+      - tautulli
+    environment:
+      - TZ=${TZ_ID:-America/New_York}
+      - BACKUP_CRON_EXPRESSION=${BACKUP_CRON_EXPRESSION:-0 2 * * *}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-14}
+      - BACKUP_FILENAME=${BACKUP_LABEL}-%Y-%m-%dT%H-%M-%S.tar.gz
+      - BACKUP_STOP_DURING_BACKUP_LABEL=${BACKUP_LABEL}
+    volumes:
+      # Volumes to backup
+      - tautulli-config:/backup/tautulli-config:ro                     
+      - plex-config:/backup/plex-config:ro                   
+      # Local backup location - use a separate secure transfer process to move backups to another host
+      - ${BACKUP_LOCAL_PATH}:/archive                     
+      # Time synch with host to ensure accurate CRON scheduling
+      - /etc/localtime:/etc/localtime:ro               
+      - /etc/timezone:/etc/timezone:ro                 
+      # Allows backup container to control other containers
+      - /var/run/docker.sock:/var/run/docker.sock:ro   
+
+    labels:
+      # WUD (What's Up Docker) Labels -----------------------------------------------
+      # Support leading 'V'
+      - 'wud.tag.include=^v\d+\.\d+\.\d+$$'
+      - 'wud.link.template=https://github.com/offen/docker-volume-backup/releases'  
 
 # Backup Volumes: tautulli-config, plex-config
 # Note: The plex-config-media volume contains “Optimized for Mobile” and “Intro Detection”
