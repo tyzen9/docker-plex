@@ -117,11 +117,14 @@ services:
       - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-14}
       - BACKUP_FILENAME=${BACKUP_LABEL}-%Y-%m-%dT%H-%M-%S.tar.gz
       - BACKUP_STOP_DURING_BACKUP_LABEL=${BACKUP_LABEL}
+      - NOTIFICATION_LEVEL=${BACKUP_NOTIFICATION_LEVEL:-error}
+      - NOTIFICATION_URLS=${BACKUP_NOTIFICATION_URLS}          # Comma-separated list of URLs      
     volumes:
       # Volumes to backup
       - tautulli-config:/backup/tautulli-config:ro                     
       - plex-config:/backup/plex-config:ro                   
       # Local backup location - use a separate secure transfer process to move backups to another host
+      - ${BACKUP_LOCAL_TMP_PATH}:/tmp  # Assign a specific tmp dir on the host.  Comment this out to use /tmp
       - ${BACKUP_LOCAL_PATH}:/archive                     
       # Time synch with host to ensure accurate CRON scheduling
       - /etc/localtime:/etc/localtime:ro               
