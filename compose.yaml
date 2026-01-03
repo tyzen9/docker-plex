@@ -94,7 +94,7 @@ services:
       - "docker-volume-backup.stop-during-backup=${BACKUP_LABEL}"
 
   # *********************************************************************************
-  # volume-backup
+  # docker-volume-backup
   #   Automated daily backup of Docker named volumes using offen/docker-volume-backup.
   #   This lightweight service runs in the background, creates a single compressed 
   #   archive containing all specified volumes, and automatically prunes old backups 
@@ -112,7 +112,6 @@ services:
       - plex
       - tautulli
     environment:
-      - TZ=${TZ_ID:-America/New_York}
       - BACKUP_CRON_EXPRESSION=${BACKUP_CRON_EXPRESSION:-0 2 * * *}
       - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-14}
       - BACKUP_FILENAME=${BACKUP_LABEL}-%Y-%m-%dT%H-%M-%S.tar.gz
